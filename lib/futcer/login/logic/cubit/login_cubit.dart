@@ -2,7 +2,6 @@ import 'package:auth_app/core/api/dio_consumer.dart';
 import 'package:auth_app/core/api/end_ponits.dart';
 import 'package:auth_app/core/errors/exceptions.dart';
 import 'package:bloc/bloc.dart';
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 
 part 'login_state.dart';
@@ -19,12 +18,11 @@ class LoginCubit extends Cubit<LoginState> {
   ) async {
     try {
       emit(LoginLoding());
-      final Response = await api.post(
+      await api.post(
         EndPoint.login,
         data: {
           ApiKey.username: username,
           ApiKey.pairing_secret: pairing_secret,
-          // to do?
           ApiKey.android_id: android_id,
           ApiKey.password: password,
         },

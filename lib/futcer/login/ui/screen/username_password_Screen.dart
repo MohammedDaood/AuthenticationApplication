@@ -38,13 +38,10 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
   }
 
-
-
   //svwWKUDNcHUWmSqEStsb9g
   @override
   Widget build(BuildContext context) {
     final qrCode = ModalRoute.of(context)?.settings.arguments as String?;
-    final android_id = getDeviceId().toString();
 
     return BlocProvider(
       create: (context) => LoginCubit(DioConsumer(dio: Dio())),
@@ -176,17 +173,13 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                         if (value == null || value.trim().isEmpty) {
                           return 'الرجاء إدخال كلمة المرور';
                         }
-
                         if (value.length < 8) {
                           return 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
                         }
-
                         return null;
                       },
                     ),
-
                     SizedBox(height: 32.h),
-
                     BlocConsumer<LoginCubit, LoginState>(
                       listener: (context, state) {
                         if (state is LoginSuccess) {
@@ -206,9 +199,12 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                         return state is LoginLoding
                             ? CircularProgressIndicator()
                             : GestureDetector(
-                                onTap: () {
+                                onTap: () async {
                                   // this fun for validate
-                                  _submit(qrCode.toString());
+                                  if (!_formKey.currentState!.validate())
+                                    return;
+
+                                  final android_id = await getDeviceId() ?? '';
 
                                   // we get the id
                                   // we need to send data to cubit
@@ -250,7 +246,6 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                               );
                       },
                     ),
-
                     SizedBox(height: 70.h),
                   ],
                 ),
