@@ -56,20 +56,12 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SvgPicture.asset(
-                      'assets/svgs/login.svg',
-                      width: 400.w,
-                      height: 300.h,
-                    ),
+                    SvgPicture.asset('assets/svgs/login.svg', width: 400.w, height: 300.h),
 
                     Text(
                       "أهلاً بك",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: ColorsManager.myBlack,
-                      ),
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: ColorsManager.myBlack),
                     ),
 
                     SizedBox(height: 5.h),
@@ -77,10 +69,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                     Text(
                       "أدخل بيانات الدخول للمتابعة",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: ColorsManager.myGrey,
-                      ),
+                      style: const TextStyle(fontSize: 16, color: ColorsManager.myGrey),
                     ),
 
                     SizedBox(height: 32.h),
@@ -97,10 +86,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                       decoration: InputDecoration(
                         hintText: "اسم المستخدم",
                         hintStyle: const TextStyle(color: ColorsManager.myGrey),
-                        prefixIcon: const Icon(
-                          Icons.person_outline,
-                          color: ColorsManager.myBlue,
-                        ),
+                        prefixIcon: const Icon(Icons.person_outline, color: ColorsManager.myBlue),
                         filled: true,
                         fillColor: Colors.grey.shade100,
                         border: OutlineInputBorder(
@@ -109,10 +95,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.r),
-                          borderSide: const BorderSide(
-                            color: ColorsManager.myBlue,
-                            width: 1.5,
-                          ),
+                          borderSide: const BorderSide(color: ColorsManager.myBlue, width: 1.5),
                         ),
                       ),
                       validator: (value) {
@@ -138,10 +121,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                       decoration: InputDecoration(
                         hintText: "كلمة المرور",
                         hintStyle: const TextStyle(color: ColorsManager.myGrey),
-                        prefixIcon: const Icon(
-                          Icons.lock_outline,
-                          color: ColorsManager.myBlue,
-                        ),
+                        prefixIcon: const Icon(Icons.lock_outline, color: ColorsManager.myBlue),
                         suffixIcon: GestureDetector(
                           onTap: () {
                             setState(() {
@@ -149,9 +129,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                             });
                           },
                           child: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
+                            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                             color: ColorsManager.myGrey,
                           ),
                         ),
@@ -163,10 +141,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.r),
-                          borderSide: const BorderSide(
-                            color: ColorsManager.myBlue,
-                            width: 1.5,
-                          ),
+                          borderSide: const BorderSide(color: ColorsManager.myBlue, width: 1.5),
                         ),
                       ),
                       validator: (value) {
@@ -190,9 +165,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                             predicate: (route) => false,
                           );
                         } else if (state is LoginFailure) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.errMessage)),
-                          );
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errMessage)));
                         }
                       },
                       builder: (context, state) {
@@ -201,10 +174,11 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                             : GestureDetector(
                                 onTap: () async {
                                   // this fun for validate
-                                  if (!_formKey.currentState!.validate())
-                                    return;
+                                  if (!_formKey.currentState!.validate()) return;
 
                                   final android_id = await getDeviceId() ?? '';
+                                  PrefUtils.saveDeviceId(android_id);
+                                  print("Device ID: $android_id");
 
                                   // we get the id
                                   // we need to send data to cubit
@@ -224,9 +198,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
                                     borderRadius: BorderRadius.circular(12.r),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: ColorsManager.myBlue.withOpacity(
-                                          0.4,
-                                        ),
+                                        color: ColorsManager.myBlue.withOpacity(0.4),
                                         blurRadius: 20,
                                         spreadRadius: 2,
                                         offset: const Offset(0, 6),

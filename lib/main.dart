@@ -8,9 +8,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PrefUtils.init();
   final isCompleted = PrefUtils.isOnboardingCompleted();
-  final initialRoute = isCompleted
-      ? Routes.homeScreen
-      : Routes.onboardingScreen;
+  final initialRoute = isCompleted ? Routes.onboardingScreen : Routes.homeScreen;
 
   runApp(AuthApp(appRouter: AppRouter(), initialRoute: initialRoute));
 }

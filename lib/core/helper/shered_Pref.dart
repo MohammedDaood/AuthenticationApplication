@@ -3,7 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PrefUtils {
   static SharedPreferences? _prefs;
   static const String _keyOnboardingCompleted = 'onboarding_completed';
-  static const String _keyUsername = 'username'; // 👈 أضف هذا
+  static const String _keyUsername = 'username';
+  static const String _keyDeviceId = 'device_id';
 
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -17,7 +18,14 @@ class PrefUtils {
     await _prefs?.setBool(_keyOnboardingCompleted, true);
   }
 
-  // 👇 أضف هاتين الدالتين
+  static Future<void> saveDeviceId(String DeviceId) async {
+    await _prefs?.setString(_keyDeviceId, DeviceId);
+  }
+
+  static String getDeviceId() {
+    return _prefs?.getString(_keyDeviceId) ?? '';
+  }
+
   static Future<void> saveUsername(String username) async {
     await _prefs?.setString(_keyUsername, username);
   }

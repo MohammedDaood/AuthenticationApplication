@@ -11,6 +11,11 @@ final class OtpInitial extends OtpState {}
 
 final class OtpLoding extends OtpState {}
 
+final class OtpExpiry extends OtpState {
+  final String message;
+  const OtpExpiry({required this.message});
+}
+
 final class OtpSuccess extends OtpState {
   final String otp;
   const OtpSuccess({required this.otp});
