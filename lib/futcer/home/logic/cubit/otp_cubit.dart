@@ -13,15 +13,18 @@ class OtpCubit extends Cubit<OtpState> {
   final DioConsumer api;
   OtpCubit(this.api) : super(OtpInitial());
 
-  getOtp(String qrCode) async {
+  Future<void> getOtp(String qrCode) async {
     emit(OtpLoding());
     try {
       final response = await api.post(
         EndPoint.getOtp,
         data: {ApiKey.qr_code: qrCode, ApiKey.android_id: PrefUtils.getDeviceId()},
       );
-
-      emit(OtpSuccess(otp: response));
+      if (response.data[ApiKey.otp] == null) {
+        emit(OtpExpiry(message: "انتهت صلاحية رمز الاستجابة السريعة. يرجى مسح رمز الاستجابة السريعة مرة أخرى."));
+        return;
+      }
+      emit(OtpSuccess(otp: response.data[ApiKey.otp]));
     } on ServerException catch (e) {
       emit(OtpFailure(errMessage: e.errModel.detail));
     }

@@ -1,0 +1,166 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:auth_app/futcer/home/logic/cubit/otp_cubit.dart';
+
+import 'package:auth_app/core/theming/colors.dart';
+
+class OtpCardWidget extends StatefulWidget {
+  const OtpCardWidget({Key? key}) : super(key: key);
+
+  @override
+  State<OtpCardWidget> createState() => _OtpCardWidgetState();
+}
+
+class _OtpCardWidgetState extends State<OtpCardWidget> {
+  String _otpCode = '000000';
+  static const int _totalSeconds = 30;
+
+  // ─── State Variables ─────────────────────────────────────
+  late int _remainingSeconds;
+  Timer? _timer;
+
+  // ─── Lifecycle ───────────────────────────────────────────
+
+  @override
+  void initState() {
+    super.initState();
+    _remainingSeconds = _totalSeconds;
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  // ─── Timer Logic ─────────────────────────────────────────
+
+  void _startTimer() {
+    _timer?.cancel();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds <= 0) {
+        timer.cancel();
+
+        setState(() {
+          _otpCode = "000000";
+        });
+
+        return;
+      }
+
+      setState(() {
+        _remainingSeconds--;
+      });
+    });
+  }
+
+  // ─── Computed Properties ─────────────────────────────────
+
+  /// يحوّل الثواني المتبقية إلى صيغة MM:SS
+  String get _formattedTime {
+    final minutes = (_remainingSeconds ~/ 60).toString().padLeft(2, '0');
+    final seconds = (_remainingSeconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<OtpCubit, OtpState>(
+      listener: (context, state) {
+        if (state is OtpSuccess) {
+          setState(() {
+            _otpCode = state.otp;
+            _remainingSeconds = _totalSeconds;
+          });
+
+          _timer?.cancel();
+          _startTimer();
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28.r),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.white, ColorsManager.myBlue.withOpacity(0.06)],
+          ),
+          boxShadow: [
+            BoxShadow(color: ColorsManager.myBlue.withOpacity(0.12), blurRadius: 24, offset: const Offset(0, 10)),
+          ],
+          border: Border.all(color: ColorsManager.myBlue.withOpacity(0.12)),
+        ),
+        child: Column(
+          children: [
+            _buildCardTitle(),
+
+            SizedBox(height: 24.h),
+
+            _buildOtpCodeDisplay(),
+
+            SizedBox(height: 16.h),
+
+            _buildCountdownBadge(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// عنوان بطاقة OTP
+  Widget _buildCardTitle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.security_rounded, color: ColorsManager.myBlue, size: 18.r),
+
+        SizedBox(width: 6.w),
+
+        Text(
+          'رمز التحقق المؤقت',
+          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: ColorsManager.myGrey),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOtpCodeDisplay() {
+    return GestureDetector(
+      child: Text(
+        '${_otpCode.substring(0, 3)} ${_otpCode.substring(3)}',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 36.sp, letterSpacing: 8, color: ColorsManager.myBlack),
+      ),
+    );
+  }
+
+  Widget _buildCountdownBadge() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: ColorsManager.myBlue.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.timer_outlined, color: ColorsManager.myBlue, size: 16.r),
+
+          SizedBox(width: 6.w),
+
+          Text(
+            'متبقي $_formattedTime',
+            style: TextStyle(color: ColorsManager.myBlue, fontWeight: FontWeight.bold, fontSize: 13.sp),
+          ),
+        ],
+      ),
+    );
+  }
+}

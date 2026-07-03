@@ -66,3 +66,17 @@ flutter:
       fonts:
         - asset: assets/fonts/cairo.ttf
 
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/images/splashicons2.png
+  branding: assets/images/QIcons.png
+  branding_mode: bottom
+
+  android_12:
+    image: assets/images/splashicons.png
+    icon_background_color: "#FFFFFF"
+    branding: assets/images/QIcons.png
+
+  android: true
+  ios: true
+  web: false

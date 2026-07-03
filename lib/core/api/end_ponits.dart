@@ -11,4 +11,5 @@ class ApiKey {
   static String android_id = "android_id";
   static String pairing_secret = "pairing_secret";
   static String qr_code = "qr_code";
+  static String otp = "otp";
 }

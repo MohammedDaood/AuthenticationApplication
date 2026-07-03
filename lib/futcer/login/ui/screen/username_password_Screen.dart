@@ -38,7 +38,6 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
   }
 
-  //svwWKUDNcHUWmSqEStsb9g
   @override
   Widget build(BuildContext context) {
     final qrCode = ModalRoute.of(context)?.settings.arguments as String?;
