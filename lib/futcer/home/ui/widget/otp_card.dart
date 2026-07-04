@@ -18,18 +18,8 @@ class _OtpCardWidgetState extends State<OtpCardWidget> {
   String _otpCode = '000000';
   static const int _totalSeconds = 30;
 
-  // ─── State Variables ─────────────────────────────────────
-  late int _remainingSeconds;
+  int _remainingSeconds = 0;
   Timer? _timer;
-
-  // ─── Lifecycle ───────────────────────────────────────────
-
-  @override
-  void initState() {
-    super.initState();
-    _remainingSeconds = _totalSeconds;
-    _startTimer();
-  }
 
   @override
   void dispose() {
@@ -37,31 +27,28 @@ class _OtpCardWidgetState extends State<OtpCardWidget> {
     super.dispose();
   }
 
-  // ─── Timer Logic ─────────────────────────────────────────
-
   void _startTimer() {
     _timer?.cancel();
+    _remainingSeconds = _totalSeconds;
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds <= 0) {
         timer.cancel();
-
-        setState(() {
-          _otpCode = "000000";
-        });
-
+        setState(() => _otpCode = "000000");
         return;
       }
-
-      setState(() {
-        _remainingSeconds--;
-      });
+      setState(() => _remainingSeconds--);
     });
   }
 
-  // ─── Computed Properties ─────────────────────────────────
+  void _resetToDefault() {
+    _timer?.cancel();
+    setState(() {
+      _otpCode = "000000";
+      _remainingSeconds = 0;
+    });
+  }
 
-  /// يحوّل الثواني المتبقية إلى صيغة MM:SS
   String get _formattedTime {
     final minutes = (_remainingSeconds ~/ 60).toString().padLeft(2, '0');
     final seconds = (_remainingSeconds % 60).toString().padLeft(2, '0');
@@ -70,59 +57,66 @@ class _OtpCardWidgetState extends State<OtpCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<OtpCubit, OtpState>(
+    return BlocConsumer<OtpCubit, OtpState>(
       listener: (context, state) {
-        if (state is OtpSuccess) {
-          setState(() {
-            _otpCode = state.otp;
-            _remainingSeconds = _totalSeconds;
-          });
-
-          _timer?.cancel();
-          _startTimer();
+        if (state is OtpFailure) {
+          _resetToDefault();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errMessage)));
+        } else if (state is OtpExpiry) {
+          _resetToDefault();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+        } else if (state is OtpSuccess) {
+          final otp = state.otp;
+          if (otp == null || otp.isEmpty) {
+            _resetToDefault();
+          } else {
+            setState(() => _otpCode = otp);
+            _startTimer();
+          }
         }
       },
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28.r),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.white, ColorsManager.myBlue.withOpacity(0.06)],
+      builder: (context, state) {
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28.r),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.white, ColorsManager.myBlue.withOpacity(0.06)],
+            ),
+            boxShadow: [
+              BoxShadow(color: ColorsManager.myBlue.withOpacity(0.12), blurRadius: 24, offset: const Offset(0, 10)),
+            ],
+            border: Border.all(color: ColorsManager.myBlue.withOpacity(0.12)),
           ),
-          boxShadow: [
-            BoxShadow(color: ColorsManager.myBlue.withOpacity(0.12), blurRadius: 24, offset: const Offset(0, 10)),
-          ],
-          border: Border.all(color: ColorsManager.myBlue.withOpacity(0.12)),
-        ),
-        child: Column(
-          children: [
-            _buildCardTitle(),
-
-            SizedBox(height: 24.h),
-
-            _buildOtpCodeDisplay(),
-
-            SizedBox(height: 16.h),
-
-            _buildCountdownBadge(),
-          ],
-        ),
-      ),
+          child: Column(
+            children: [
+              _buildCardTitle(),
+              SizedBox(height: 24.h),
+              if (state is OtpLoding)
+                SizedBox(
+                  height: 44.h,
+                  child: const Center(child: CircularProgressIndicator()),
+                )
+              else
+                _buildOtpCodeDisplay(),
+              SizedBox(height: 16.h),
+              _buildCountdownBadge(),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  /// عنوان بطاقة OTP
   Widget _buildCardTitle() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.security_rounded, color: ColorsManager.myBlue, size: 18.r),
-
         SizedBox(width: 6.w),
-
         Text(
           'رمز التحقق المؤقت',
           style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: ColorsManager.myGrey),
@@ -152,9 +146,7 @@ class _OtpCardWidgetState extends State<OtpCardWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.timer_outlined, color: ColorsManager.myBlue, size: 16.r),
-
           SizedBox(width: 6.w),
-
           Text(
             'متبقي $_formattedTime',
             style: TextStyle(color: ColorsManager.myBlue, fontWeight: FontWeight.bold, fontSize: 13.sp),
