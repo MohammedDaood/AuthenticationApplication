@@ -1,8 +1,8 @@
 import 'package:auth_app/core/helper/shered_Pref.dart';
 import 'package:auth_app/core/theming/colors.dart';
-import 'package:auth_app/futcer/home/ui/widget/otp_card.dart';
-import 'package:auth_app/futcer/home/ui/widget/qrcode_key.dart';
-import 'package:auth_app/futcer/home/ui/widget/user_heder.dart';
+import 'package:auth_app/futcer/home/ui/widget/build_user_header.dart';
+import 'package:auth_app/futcer/home/ui/widget/otp_card_widget.dart';
+import 'package:auth_app/futcer/home/ui/widget/qr_manual_key_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -30,16 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              buildUserHeader(),
-
+              const BuildUserHeader(),
               SizedBox(height: 60.h),
-
               const OtpCardWidget(),
-
               SizedBox(height: 60.h),
-
               const QrManualKeySection(),
-
               SizedBox(height: 40.h),
             ],
           ),

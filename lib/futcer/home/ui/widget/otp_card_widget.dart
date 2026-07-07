@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auth_app/futcer/home/logic/cubit/otp_cubit.dart';
+import 'package:auth_app/futcer/home/ui/widget/build_card_title.dart';
 
 import 'package:auth_app/core/theming/colors.dart';
 
@@ -15,9 +16,10 @@ class OtpCardWidget extends StatefulWidget {
 }
 
 class _OtpCardWidgetState extends State<OtpCardWidget> {
-  String _otpCode = '000000';
+  static const String _defaultOtp = '000000';
   static const int _totalSeconds = 30;
 
+  String _otpCode = _defaultOtp;
   int _remainingSeconds = 0;
   Timer? _timer;
 
@@ -34,17 +36,18 @@ class _OtpCardWidgetState extends State<OtpCardWidget> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds <= 0) {
         timer.cancel();
-        setState(() => _otpCode = "000000");
+        if (mounted) setState(() => _otpCode = _defaultOtp);
         return;
       }
-      setState(() => _remainingSeconds--);
+      if (mounted) setState(() => _remainingSeconds--);
     });
   }
 
   void _resetToDefault() {
     _timer?.cancel();
+    if (!mounted) return;
     setState(() {
-      _otpCode = "000000";
+      _otpCode = _defaultOtp;
       _remainingSeconds = 0;
     });
   }
@@ -55,26 +58,36 @@ class _OtpCardWidgetState extends State<OtpCardWidget> {
     return '$minutes:$seconds';
   }
 
+  // آمن ضد أي طول غير متوقع للـ OTP القادم من السيرفر
+  String get _displayOtp {
+    if (_otpCode.length == 6) {
+      return '${_otpCode.substring(0, 3)} ${_otpCode.substring(3)}';
+    }
+    return _otpCode;
+  }
+
+  void _onOtpState(BuildContext context, OtpState state) {
+    if (state is OtpFailure) {
+      _resetToDefault();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errMessage)));
+    } else if (state is OtpExpiry) {
+      _resetToDefault();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+    } else if (state is OtpSuccess) {
+      final otp = state.otp;
+      if (otp == null || otp.isEmpty) {
+        _resetToDefault();
+      } else {
+        setState(() => _otpCode = otp);
+        _startTimer();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OtpCubit, OtpState>(
-      listener: (context, state) {
-        if (state is OtpFailure) {
-          _resetToDefault();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errMessage)));
-        } else if (state is OtpExpiry) {
-          _resetToDefault();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-        } else if (state is OtpSuccess) {
-          final otp = state.otp;
-          if (otp == null || otp.isEmpty) {
-            _resetToDefault();
-          } else {
-            setState(() => _otpCode = otp);
-            _startTimer();
-          }
-        }
-      },
+      listener: _onOtpState,
       builder: (context, state) {
         return Container(
           width: double.infinity,
@@ -93,7 +106,7 @@ class _OtpCardWidgetState extends State<OtpCardWidget> {
           ),
           child: Column(
             children: [
-              _buildCardTitle(),
+              const BuildCardTitle(),
               SizedBox(height: 24.h),
               if (state is OtpLoding)
                 SizedBox(
@@ -111,27 +124,11 @@ class _OtpCardWidgetState extends State<OtpCardWidget> {
     );
   }
 
-  Widget _buildCardTitle() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.security_rounded, color: ColorsManager.myBlue, size: 18.r),
-        SizedBox(width: 6.w),
-        Text(
-          'رمز التحقق المؤقت',
-          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: ColorsManager.myGrey),
-        ),
-      ],
-    );
-  }
-
   Widget _buildOtpCodeDisplay() {
-    return GestureDetector(
-      child: Text(
-        '${_otpCode.substring(0, 3)} ${_otpCode.substring(3)}',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 36.sp, letterSpacing: 8, color: ColorsManager.myBlack),
-      ),
+    return Text(
+      _displayOtp,
+      textAlign: TextAlign.center,
+      style: TextStyle(fontSize: 36.sp, letterSpacing: 8, color: ColorsManager.myBlack),
     );
   }
 

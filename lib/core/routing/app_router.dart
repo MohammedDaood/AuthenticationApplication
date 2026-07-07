@@ -22,7 +22,7 @@ class AppRouter {
       case Routes.homeScreen:
         return MaterialPageRoute(
           builder: (_) => BlocProvider<OtpCubit>(
-            create: (context) => OtpCubit(DioConsumer(dio: Dio())), // عدّل حسب طريقة الإنشاء عندك
+            create: (context) => OtpCubit(DioConsumer(dio: Dio())),
             child: HomeScreen(),
           ),
         );

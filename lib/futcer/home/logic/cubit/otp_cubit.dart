@@ -4,6 +4,7 @@ import 'package:auth_app/core/api/dio_consumer.dart';
 import 'package:auth_app/core/api/end_ponits.dart';
 import 'package:auth_app/core/errors/exceptions.dart';
 import 'package:auth_app/core/helper/device_id.dart' as PrefUtils;
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,6 +28,10 @@ class OtpCubit extends Cubit<OtpState> {
       emit(OtpSuccess(otp: response.data[ApiKey.otp]));
     } on ServerException catch (e) {
       emit(OtpFailure(errMessage: e.errModel.detail));
+    } on DioException {
+      emit(OtpFailure(errMessage: 'تعذر الاتصال بالخادم، تحقق من اتصال الإنترنت.'));
+    } catch (_) {
+      emit(OtpFailure(errMessage: 'حدث خطأ غير متوقع، حاول مرة أخرى.'));
     }
   }
 }

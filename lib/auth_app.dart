@@ -19,6 +19,7 @@ class AuthApp extends StatelessWidget {
           primaryColor: ColorsManager.myBlue,
           scaffoldBackgroundColor: ColorsManager.myWhite,
         ),
+
         onGenerateRoute: _appRouter.generateRoute,
         initialRoute: initialRoute,
         debugShowCheckedModeBanner: false,
