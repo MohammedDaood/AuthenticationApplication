@@ -11,8 +11,7 @@ class QrScannerScreen extends StatefulWidget {
   State<QrScannerScreen> createState() => _QrScannerScreenState();
 }
 
-class _QrScannerScreenState extends State<QrScannerScreen>
-    with SingleTickerProviderStateMixin {
+class _QrScannerScreenState extends State<QrScannerScreen> with SingleTickerProviderStateMixin {
   late final MobileScannerController _controller;
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -30,14 +29,13 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       torchEnabled: false,
     );
 
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
+    _animationController = AnimationController(vsync: this, duration: const Duration(seconds: 2))
+      ..repeat(reverse: true);
 
-    _animation = Tween<double>(begin: 0, end: 220).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.linear),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: 220,
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.linear));
 
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) setState(() => _isReady = true);
@@ -71,10 +69,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
 
       if (!mounted) return;
 
-      context.pushReplacementNamed(
-        Routes.usernamePasswordScreen,
-        arguments: code,
-      );
+      context.pushReplacementNamed(Routes.usernamePasswordScreen, arguments: code);
     } catch (e) {
       debugPrint('Scanner Error: $e');
       _isProcessing = false;
@@ -95,50 +90,28 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       appBar: AppBar(
         backgroundColor: ColorsManager.myBlack,
         iconTheme: const IconThemeData(color: ColorsManager.myWhite),
-        title: const Text(
-          "مسح رمز QR",
-          style: TextStyle(color: ColorsManager.myWhite),
-        ),
+        title: const Text("مسح رمز QR", style: TextStyle(color: ColorsManager.myWhite)),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.flash_on),
-            onPressed: () => _controller.toggleTorch(),
-          ),
-          IconButton(
-            icon: const Icon(Icons.flip_camera_ios),
-            onPressed: () => _controller.switchCamera(),
-          ),
+          IconButton(icon: const Icon(Icons.flash_on), onPressed: () => _controller.toggleTorch()),
+          IconButton(icon: const Icon(Icons.flip_camera_ios), onPressed: () => _controller.switchCamera()),
         ],
       ),
       body: Stack(
         children: [
-          MobileScanner(
-            controller: _controller,
-            onDetect: _handleBarcode,
-            fit: BoxFit.cover,
-          ),
+          MobileScanner(controller: _controller, onDetect: _handleBarcode, fit: BoxFit.cover),
 
           ColorFiltered(
-            colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.55),
-              BlendMode.srcOut,
-            ),
+            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.55), BlendMode.srcOut),
             child: Stack(
               children: [
                 Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    backgroundBlendMode: BlendMode.dstOut,
-                  ),
+                  decoration: const BoxDecoration(color: Colors.black, backgroundBlendMode: BlendMode.dstOut),
                 ),
                 Center(
                   child: Container(
                     width: 260,
                     height: 260,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                    decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(16)),
                   ),
                 ),
               ],
@@ -163,11 +136,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                           height: 2.5,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [
-                                Colors.transparent,
-                                ColorsManager.myBlue,
-                                Colors.transparent,
-                              ],
+                              colors: [Colors.transparent, ColorsManager.myBlue, Colors.transparent],
                             ),
                             borderRadius: BorderRadius.circular(2),
                           ),
@@ -189,21 +158,14 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                 Text(
                   _isReady ? "ضع رمز QR داخل الإطار" : "جارٍ تجهيز الكاميرا...",
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: ColorsManager.myWhite,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: const TextStyle(color: ColorsManager.myWhite, fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 if (!_isReady) ...[
                   const SizedBox(height: 10),
                   const SizedBox(
                     width: 24,
                     height: 24,
-                    child: CircularProgressIndicator(
-                      color: ColorsManager.myBlue,
-                      strokeWidth: 2.5,
-                    ),
+                    child: CircularProgressIndicator(color: ColorsManager.myBlue, strokeWidth: 2.5),
                   ),
                 ],
               ],
@@ -221,47 +183,20 @@ class _QrScannerScreenState extends State<QrScannerScreen>
 
     return [
       // أعلى يسار
-      Positioned(
-        top: 0,
-        left: 0,
-        child: _corner(color, size, thickness, top: true, left: true),
-      ),
+      Positioned(top: 0, left: 0, child: _corner(color, size, thickness, top: true, left: true)),
       // أعلى يمين
-      Positioned(
-        top: 0,
-        right: 0,
-        child: _corner(color, size, thickness, top: true, left: false),
-      ),
+      Positioned(top: 0, right: 0, child: _corner(color, size, thickness, top: true, left: false)),
       // أسفل يسار
-      Positioned(
-        bottom: 0,
-        left: 0,
-        child: _corner(color, size, thickness, top: false, left: true),
-      ),
+      Positioned(bottom: 0, left: 0, child: _corner(color, size, thickness, top: false, left: true)),
       // أسفل يمين
-      Positioned(
-        bottom: 0,
-        right: 0,
-        child: _corner(color, size, thickness, top: false, left: false),
-      ),
+      Positioned(bottom: 0, right: 0, child: _corner(color, size, thickness, top: false, left: false)),
     ];
   }
 
-  Widget _corner(
-    Color color,
-    double size,
-    double thickness, {
-    required bool top,
-    required bool left,
-  }) {
+  Widget _corner(Color color, double size, double thickness, {required bool top, required bool left}) {
     return CustomPaint(
       size: Size(size, size),
-      painter: _CornerPainter(
-        color: color,
-        thickness: thickness,
-        top: top,
-        left: left,
-      ),
+      painter: _CornerPainter(color: color, thickness: thickness, top: top, left: left),
     );
   }
 }
@@ -272,12 +207,7 @@ class _CornerPainter extends CustomPainter {
   final bool top;
   final bool left;
 
-  _CornerPainter({
-    required this.color,
-    required this.thickness,
-    required this.top,
-    required this.left,
-  });
+  _CornerPainter({required this.color, required this.thickness, required this.top, required this.left});
 
   @override
   void paint(Canvas canvas, Size size) {

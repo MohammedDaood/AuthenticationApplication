@@ -1,4 +1,4 @@
-import 'package:auth_app/core/api/dio_consumer.dart';
+import 'package:auth_app/core/api/api_consumer.dart';
 import 'package:auth_app/core/api/end_ponits.dart';
 import 'package:auth_app/core/errors/exceptions.dart';
 import 'package:bloc/bloc.dart';
@@ -7,15 +7,10 @@ import 'package:equatable/equatable.dart';
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
-  final DioConsumer api;
+  final ApiConsumer api;
   LoginCubit(this.api) : super(LoginInitial());
 
-  Login(
-    String username,
-    String password,
-    String pairing_secret,
-    String android_id,
-  ) async {
+  Login(String username, String password, String pairing_secret, String android_id) async {
     try {
       emit(LoginLoding());
       await api.post(

@@ -1,4 +1,4 @@
-import 'package:auth_app/core/api/dio_consumer.dart';
+import 'package:auth_app/core/di/dependency_injection.dart' show getIt;
 import 'package:auth_app/core/routing/routes.dart';
 import 'package:auth_app/futcer/Onboarding/screens/onboarding_screen.dart';
 import 'package:auth_app/futcer/home/logic/cubit/otp_cubit.dart';
@@ -6,7 +6,6 @@ import 'package:auth_app/futcer/home/ui/screen/home_screen.dart';
 import 'package:auth_app/futcer/login/ui/screen/%20qr_scanner_screen.dart';
 import 'package:auth_app/futcer/login/ui/screen/login_screen.dart';
 import 'package:auth_app/futcer/login/ui/screen/username_password_Screen.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,10 +20,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => QrScannerScreen());
       case Routes.homeScreen:
         return MaterialPageRoute(
-          builder: (_) => BlocProvider<OtpCubit>(
-            create: (context) => OtpCubit(DioConsumer(dio: Dio())),
-            child: HomeScreen(),
-          ),
+          builder: (_) => BlocProvider<OtpCubit>(create: (context) => getIt<OtpCubit>(), child: HomeScreen()),
         );
       case Routes.usernamePasswordScreen:
         return MaterialPageRoute(settings: settings, builder: (_) => const UsernamePasswordScreen());

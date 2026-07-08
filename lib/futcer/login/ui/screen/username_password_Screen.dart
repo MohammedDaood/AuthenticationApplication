@@ -1,4 +1,5 @@
 import 'package:auth_app/core/api/dio_consumer.dart';
+import 'package:auth_app/core/di/dependency_injection.dart';
 import 'package:auth_app/core/helper/device_id.dart';
 import 'package:auth_app/core/helper/extensions.dart';
 import 'package:auth_app/core/helper/shered_Pref.dart';
@@ -43,7 +44,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
     final qrCode = ModalRoute.of(context)?.settings.arguments as String?;
 
     return BlocProvider(
-      create: (context) => LoginCubit(DioConsumer(dio: Dio())),
+      create: (context) => getIt<LoginCubit>(),
       child: Scaffold(
         backgroundColor: ColorsManager.myWhite,
         body: SingleChildScrollView(
