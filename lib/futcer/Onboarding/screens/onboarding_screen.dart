@@ -19,7 +19,6 @@ class _OnboardingScreenState extends State<onboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  // متغير جديد: بنخزن فيه آخر وقت ضغط فيه المستخدم زر الرجوع
   DateTime? _lastBackPressTime;
 
   final List<OnboardingModel> _onboardingPages = [
