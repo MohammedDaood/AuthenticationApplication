@@ -3,6 +3,7 @@ import 'package:auth_app/core/routing/routes.dart';
 import 'package:auth_app/futcer/Onboarding/screens/onboarding_screen.dart';
 import 'package:auth_app/futcer/home/logic/cubit/otp_cubit.dart';
 import 'package:auth_app/futcer/home/ui/screen/home_screen.dart';
+import 'package:auth_app/futcer/home/ui/screen/qr_otp_screens.dart';
 import 'package:auth_app/futcer/login/ui/screen/%20qr_scanner_screen.dart';
 import 'package:auth_app/futcer/login/ui/screen/login_screen.dart';
 import 'package:auth_app/futcer/login/ui/screen/username_password_Screen.dart';
@@ -18,6 +19,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => LoginScreen());
       case Routes.qrScannerScreen:
         return MaterialPageRoute(builder: (_) => QrScannerScreen());
+      case Routes.qrOtpScreens:
+        return MaterialPageRoute(builder: (_) => QrOtpScreen());
       case Routes.homeScreen:
         return MaterialPageRoute(
           builder: (_) => BlocProvider<OtpCubit>(create: (context) => getIt<OtpCubit>(), child: HomeScreen()),

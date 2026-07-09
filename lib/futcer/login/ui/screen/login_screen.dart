@@ -64,8 +64,7 @@ class LoginScreen extends StatelessWidget {
 
                     GestureDetector(
                       onTap: () async {
-                        final result = await context.pushNamed(Routes.qrScannerScreen);
-                        if (result != null) {}
+                        await context.pushNamed(Routes.qrScannerScreen);
                       },
                       child: Container(
                         width: 80,

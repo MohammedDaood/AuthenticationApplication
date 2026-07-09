@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:auth_app/core/helper/shered_Pref.dart';
+import 'package:auth_app/core/routing/routes.dart';
 import 'package:auth_app/core/theming/colors.dart';
 import 'package:auth_app/futcer/home/logic/cubit/otp_cubit.dart';
 import 'package:auth_app/futcer/home/ui/widget/build_card_title.dart';
@@ -184,8 +184,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ---------------- QR + Manual key section ----------------
-
   Widget _buildQrManualKeySection() {
     return Column(
       children: [
@@ -269,6 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         SizedBox(height: 20.h),
+
         const BuildOrDivider(),
         SizedBox(height: 20.h),
         _buildQrCircleButton(),
@@ -283,11 +282,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildQrCircleButton() {
     return GestureDetector(
-      onTap: () {
-        // TODO: افتح شاشة QR Scanner
-        // وبعد ما يترجع كود صح من الماسح، نادي:
-        // final otp = await context.read<OtpCubit>().getOtp(scannedCode);
-        // if (otp.isNotEmpty) generateOtp(otp);
+      onTap: () async {
+        final qrcode = await Navigator.pushNamed(context, Routes.qrOtpScreens);
+        if (qrcode != null && qrcode is String) {
+          context.read<OtpCubit>().getOtp(qrcode);
+        }
       },
       child: Container(
         width: 90.r,

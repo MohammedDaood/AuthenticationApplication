@@ -1,17 +1,15 @@
-import 'package:auth_app/core/helper/extensions.dart';
-import 'package:auth_app/core/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:auth_app/core/theming/colors.dart';
 
-class QrScreen extends StatefulWidget {
-  const QrScreen({super.key});
+class QrOtpScreen extends StatefulWidget {
+  const QrOtpScreen({super.key});
 
   @override
-  State<QrScreen> createState() => _QrScreenState();
+  State<QrOtpScreen> createState() => _QrOtpScreenState();
 }
 
-class _QrScreenState extends State<QrScreen> with SingleTickerProviderStateMixin {
+class _QrOtpScreenState extends State<QrOtpScreen> with SingleTickerProviderStateMixin {
   late final MobileScannerController _controller;
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -27,6 +25,7 @@ class _QrScreenState extends State<QrScreen> with SingleTickerProviderStateMixin
       detectionSpeed: DetectionSpeed.noDuplicates,
       facing: CameraFacing.back,
       torchEnabled: false,
+      autoStart: false,
     );
 
     _animationController = AnimationController(vsync: this, duration: const Duration(seconds: 2))
@@ -37,26 +36,23 @@ class _QrScreenState extends State<QrScreen> with SingleTickerProviderStateMixin
       end: 220,
     ).animate(CurvedAnimation(parent: _animationController, curve: Curves.linear));
 
-    Future.delayed(const Duration(seconds: 2), () {
+    _controller.start().then((_) {
       if (mounted) setState(() => _isReady = true);
     });
   }
 
-  bool _isBase64UrlSafe(String value) {
-    final base64UrlRegex = RegExp(r'^[A-Za-z0-9\-_]+=*$');
-    return base64UrlRegex.hasMatch(value);
-  }
-
   Future<void> _handleBarcode(BarcodeCapture capture) async {
     if (_isProcessing || !_isReady) return;
+    if (capture.barcodes.isEmpty) return;
 
     final Barcode barcode = capture.barcodes.first;
-    final String? code = barcode.rawValue;
+    final String? rawValue = barcode.rawValue;
 
-    if (code == null || code.isEmpty) return;
+    if (rawValue == null || rawValue.isEmpty) return;
 
-    if (!_isBase64UrlSafe(code)) {
-      debugPrint('❌ ليس Base64 URL-safe: $code');
+    final String code = _extractSecret(rawValue);
+    if (code.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('رمز QR غير صالح، جرّب مرة أخرى')));
       return;
     }
 
@@ -65,15 +61,21 @@ class _QrScreenState extends State<QrScreen> with SingleTickerProviderStateMixin
       await _controller.stop();
       _animationController.stop();
 
-      debugPrint('✅ Base64 URL-safe QR: $code');
-
       if (!mounted) return;
 
-      context.pushReplacementNamed(Routes.usernamePasswordScreen, arguments: code);
+      Navigator.of(context).pop(code);
     } catch (e) {
       debugPrint('Scanner Error: $e');
       _isProcessing = false;
     }
+  }
+
+  String _extractSecret(String rawValue) {
+    final uri = Uri.tryParse(rawValue);
+    if (uri != null && uri.scheme == 'otpauth') {
+      return uri.queryParameters['secret'] ?? '';
+    }
+    return rawValue;
   }
 
   @override
@@ -182,13 +184,9 @@ class _QrScreenState extends State<QrScreen> with SingleTickerProviderStateMixin
     const thickness = 3.5;
 
     return [
-      // أعلى يسار
       Positioned(top: 0, left: 0, child: _corner(color, size, thickness, top: true, left: true)),
-      // أعلى يمين
       Positioned(top: 0, right: 0, child: _corner(color, size, thickness, top: true, left: false)),
-      // أسفل يسار
       Positioned(bottom: 0, left: 0, child: _corner(color, size, thickness, top: false, left: true)),
-      // أسفل يمين
       Positioned(bottom: 0, right: 0, child: _corner(color, size, thickness, top: false, left: false)),
     ];
   }

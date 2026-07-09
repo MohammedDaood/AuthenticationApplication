@@ -56,7 +56,6 @@ class _QrScannerScreenState extends State<QrScannerScreen> with SingleTickerProv
     if (code == null || code.isEmpty) return;
 
     if (!_isBase64UrlSafe(code)) {
-      debugPrint('❌ ليس Base64 URL-safe: $code');
       return;
     }
 
@@ -64,8 +63,6 @@ class _QrScannerScreenState extends State<QrScannerScreen> with SingleTickerProv
     try {
       await _controller.stop();
       _animationController.stop();
-
-      debugPrint('✅ Base64 URL-safe QR: $code');
 
       if (!mounted) return;
 

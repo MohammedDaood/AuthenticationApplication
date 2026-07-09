@@ -1,4 +1,3 @@
-import 'package:auth_app/core/api/dio_consumer.dart';
 import 'package:auth_app/core/di/dependency_injection.dart';
 import 'package:auth_app/core/helper/device_id.dart';
 import 'package:auth_app/core/helper/extensions.dart';
@@ -6,7 +5,6 @@ import 'package:auth_app/core/helper/shered_Pref.dart';
 import 'package:auth_app/core/routing/routes.dart';
 import 'package:auth_app/core/theming/colors.dart';
 import 'package:auth_app/futcer/login/logic/cubit/login_cubit.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,10 +31,6 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  Future<void> _submit(String qrCode) async {
-    if (!_formKey.currentState!.validate()) return;
   }
 
   @override
