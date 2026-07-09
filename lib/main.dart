@@ -19,7 +19,7 @@ void main() async {
   );
   await PrefUtils.init();
   final isCompleted = PrefUtils.isOnboardingCompleted();
-  final initialRoute = isCompleted ? Routes.homeScreen : Routes.homeScreen;
+  final initialRoute = isCompleted ? Routes.homeScreen : Routes.onboardingScreen;
 
   runApp(AuthApp(appRouter: AppRouter(), initialRoute: initialRoute));
 }
