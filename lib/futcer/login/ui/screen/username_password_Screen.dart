@@ -35,7 +35,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
     super.dispose();
   }
 
-  void _submit(String qrCode) {
+  Future<void> _submit(String qrCode) async {
     if (!_formKey.currentState!.validate()) return;
   }
 
@@ -182,7 +182,7 @@ class _UsernamePasswordScreenState extends State<UsernamePasswordScreen> {
 
                                   // we get the id
                                   // we need to send data to cubit
-                                  context.read<LoginCubit>().Login(
+                                  await context.read<LoginCubit>().login(
                                     _usernameController.text,
                                     _passwordController.text,
                                     qrCode.toString(),
