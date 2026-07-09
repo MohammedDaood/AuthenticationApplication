@@ -267,7 +267,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         SizedBox(height: 20.h),
-
         const BuildOrDivider(),
         SizedBox(height: 20.h),
         _buildQrCircleButton(),
